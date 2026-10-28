@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Semantic Vector Search | AI Project Duplicate Detector{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+
+    <!-- Header Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white border border-sky-800/40 shadow-md">
+        <div class="flex items-center space-x-2 text-xs uppercase font-bold text-sky-400 tracking-wider mb-2">
+            <i class="fa-solid fa-magnifying-glass-chart"></i>
+            <span>Module 3: DBMS Vector Index & Cosine Distance Engine</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-black tracking-tight">Semantic Vector Repository Search</h1>
+        <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+            Type any proposed idea or research topic in natural language. The engine converts your query into a 512-dimensional vector and executes high-speed cosine distance similarity over SQL database records.
+        </p>
+
+        <!-- Search Input Bar -->
+        <form action="{{ url_for('semantic_search') }}" method="GET" class="mt-6 flex flex-col sm:flex-row gap-2">
+            <div class="relative flex-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" name="q" value="{{ query }}" required
+                       placeholder="e.g. Facial recognition attendance system for classroom monitoring..."
+                       class="w-full pl-11 pr-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:bg-white/15 transition-all">
+            </div>
+            <button type="submit"
+                    class="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-sky-500/25 transition-all text-sm flex items-center justify-center space-x-2">
+                <span>Vector Query</span>
+                <i class="fa-solid fa-bolt text-amber-300 text-xs"></i>
+            </button>
+        </form>
+
+        <!-- Quick Query Suggestion Chips -->
+        <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+            <span class="text-slate-400 text-[11px] font-semibold">Try querying:</span>
+            <a href="{{ url_for('semantic_search', q='Face recognition student attendance system') }}" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-sky-200 border border-white/10 transition-colors">
+                Face Recognition Attendance
+            </a>
+            <a href="{{ url_for('semantic_search', q='Skin lesion cancer classification deep learning') }}" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-sky-200 border border-white/10 transition-colors">
+                Skin Cancer Detection
+            </a>
+            <a href="{{ url_for('semantic_search', q='Smart contracts blockchain real estate property') }}" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-sky-200 border border-white/10 transition-colors">
+                Blockchain Land Registry
+            </a>
+            <a href="{{ url_for('semantic_search', q='IoT agriculture automated soil moisture irrigation') }}" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-sky-200 border border-white/10 transition-colors">
+                IoT Precision Agriculture
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Results Section -->
+    {% if query %}
+    <div class="space-y-4">
+        <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+            <div>
+                Query: <span class="font-bold text-slate-800">"{{ query }}"</span>
+            </div>
+            <div>
+                Found <span class="font-bold text-sky-600">{{ results|length }}</span> ranked vector matches
+            </div>
+        </div>
+
+        {% if results %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for r in results %}
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+                <div>
+                    <!-- Top Match Bar -->
+                    <div class="flex items-center justify-between text-xs mb-2">
+                        <span class="px-2 py-0.5 rounded bg-sky-50 text-sky-700 font-bold text-[10px] uppercase">
+                            {{ r.domain }}
+                        </span>
+                        <div class="flex items-center space-x-1.5 font-mono">
+                            <span class="text-slate-400 text-[10px]">Cosine Similarity:</span>
+                            <span class="font-bold text-sm {% if r.similarity_score >= 80 %}text-rose-600{% elif r.similarity_score >= 50 %}text-amber-600{% else %}text-emerald-600{% endif %}">
+                                {{ r.similarity_score }}%
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Title -->
+                    <h3 class="font-bold text-slate-800 text-sm leading-snug mb-2">
+                        {{ r.title }}
+                    </h3>
+
+                    <!-- Abstract excerpt -->
+                    <p class="text-slate-500 text-xs leading-relaxed line-clamp-3 mb-3">
+                        {{ r.abstract }}
+                    </p>
+
+                    <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden mb-3">
+                        <div class="h-1.5 rounded-full {% if r.similarity_score >= 80 %}bg-rose-500{% elif r.similarity_score >= 50 %}bg-amber-500{% else %}bg-emerald-500{% endif %}" style="width: {{ r.similarity_score }}%"></div>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="text-slate-500 text-[11px]">
+                        Submitter: <span class="font-semibold text-slate-700">{{ r.submitted_by_name }}</span>
+                    </span>
+                    <a href="{{ url_for('view_certificate', project_id=r.project_id) }}" class="text-sky-600 hover:text-sky-800 font-semibold text-xs flex items-center space-x-1">
+                        <span>Details</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white rounded-2xl p-12 text-center border border-slate-200/80 shadow-xs">
+            <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-lg mb-3">
+                <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <h4 class="font-bold text-slate-700 text-sm">No Matching Projects Found</h4>
+            <p class="text-xs text-slate-500 mt-1">Try broadening your search query or testing with keywords like "face", "drone", or "blockchain".</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

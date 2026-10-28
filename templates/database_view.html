@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}SQL Database Inspector | AI Project Duplicate Detector{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white border border-sky-800/40 shadow-md">
+        <div class="flex items-center space-x-2 text-xs uppercase font-bold text-sky-400 tracking-wider mb-2">
+            <i class="fa-solid fa-database"></i>
+            <span>DBMS Architecture & Vector Storage</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-black tracking-tight">Relational SQL Database Explorer</h1>
+        <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+            Live inspector for the underlying SQL relational tables and dense mathematical vector representations stored inside the database.
+        </p>
+
+        <!-- Quick SQL Table Jump Badges -->
+        <div class="mt-4 flex flex-wrap gap-2 text-xs">
+            <button onclick="loadTableQuery('projects')" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 font-semibold text-white transition-colors">
+                <i class="fa-solid fa-table mr-1"></i> projects
+            </button>
+            <button onclick="loadTableQuery('project_vectors')" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-semibold text-sky-200 border border-white/20 transition-colors">
+                <i class="fa-solid fa-vector-square mr-1"></i> project_vectors
+            </button>
+            <button onclick="loadTableQuery('similarity_matches')" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-semibold text-sky-200 border border-white/20 transition-colors">
+                <i class="fa-solid fa-code-compare mr-1"></i> similarity_matches
+            </button>
+            <button onclick="loadTableQuery('entity_resolutions')" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-semibold text-sky-200 border border-white/20 transition-colors">
+                <i class="fa-solid fa-gavel mr-1"></i> entity_resolutions
+            </button>
+            <button onclick="loadTableQuery('users')" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-semibold text-sky-200 border border-white/20 transition-colors">
+                <i class="fa-solid fa-users mr-1"></i> users
+            </button>
+        </div>
+    </div>
+
+    <!-- SQL Schema Visual Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
+            <div class="font-bold text-sky-700 flex items-center justify-between border-b pb-1 font-sans">
+                <span>TABLE projects</span>
+                <span class="text-[10px] bg-sky-100 text-sky-800 px-1.5 py-0.5 rounded font-mono">Primary Data</span>
+            </div>
+            <ul class="text-slate-600 space-y-0.5 text-[11px]">
+                <li><span class="text-amber-600 font-bold">id</span> INTEGER PRIMARY KEY</li>
+                <li><span class="text-sky-600 font-bold">title</span> TEXT</li>
+                <li><span class="text-sky-600 font-bold">domain</span> TEXT</li>
+                <li><span class="text-sky-600 font-bold">abstract</span> TEXT</li>
+                <li><span class="text-sky-600 font-bold">tech_stack</span> TEXT</li>
+                <li><span class="text-slate-400 font-bold">status</span> TEXT</li>
+                <li><span class="text-emerald-600 font-bold">max_similarity_score</span> REAL</li>
+            </ul>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
+            <div class="font-bold text-purple-700 flex items-center justify-between border-b pb-1 font-sans">
+                <span>TABLE project_vectors</span>
+                <span class="text-[10px] bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded font-mono">AI Vector Index</span>
+            </div>
+            <ul class="text-slate-600 space-y-0.5 text-[11px]">
+                <li><span class="text-amber-600 font-bold">id</span> INTEGER PRIMARY KEY</li>
+                <li><span class="text-purple-600 font-bold">project_id</span> INTEGER (FK)</li>
+                <li><span class="text-purple-600 font-bold">vector_json</span> TEXT (512-D float array)</li>
+                <li><span class="text-purple-600 font-bold">dimension</span> INTEGER (512)</li>
+                <li><span class="text-slate-400 font-bold">entity_tags_json</span> TEXT</li>
+                <li><span class="text-slate-400 font-bold">updated_at</span> TIMESTAMP</li>
+            </ul>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
+            <div class="font-bold text-rose-700 flex items-center justify-between border-b pb-1 font-sans">
+                <span>TABLE similarity_matches</span>
+                <span class="text-[10px] bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded font-mono">Cosine Matrix</span>
+            </div>
+            <ul class="text-slate-600 space-y-0.5 text-[11px]">
+                <li><span class="text-amber-600 font-bold">id</span> INTEGER PRIMARY KEY</li>
+                <li><span class="text-rose-600 font-bold">source_project_id</span> INTEGER (FK)</li>
+                <li><span class="text-rose-600 font-bold">target_project_id</span> INTEGER (FK)</li>
+                <li><span class="text-rose-600 font-bold">similarity_score</span> REAL</li>
+                <li><span class="text-slate-400 font-bold">risk_level</span> TEXT</li>
+                <li><span class="text-slate-400 font-bold">common_entities</span> TEXT</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Live Interactive SQL Query Console -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-600 flex items-center justify-center font-bold text-sm">
+                    <i class="fa-solid fa-terminal"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm">Interactive SQL Query Terminal</h3>
+                    <p class="text-xs text-slate-500">Run read-only SQL queries to verify table relationships and vector index records.</p>
+                </div>
+            </div>
+            <span class="text-[11px] font-mono text-slate-400 font-semibold">Engine: SQLite3 Relational DBMS</span>
+        </div>
+
+        <div class="space-y-2">
+            <textarea id="sqlQueryInput" rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-300 font-mono text-xs text-slate-800 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none bg-slate-900 text-emerald-400">SELECT id, title, domain, status, max_similarity_score FROM projects ORDER BY id ASC</textarea>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2 text-[11px] text-slate-400">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Read-only queries (SELECT, PRAGMA) enabled for demonstration security.</span>
+                </div>
+                <button type="button" onclick="executeSqlQuery()" id="btnRunSql"
+                        class="inline-flex items-center space-x-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition-colors shadow">
+                    <i class="fa-solid fa-play text-[10px]"></i>
+                    <span>Execute SQL</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Query Output Table -->
+        <div id="queryResultContainer" class="overflow-x-auto pt-2">
+            <div class="text-center py-6 text-slate-400 text-xs">
+                Click "Execute SQL" or select a table above to run a query.
+            </div>
+        </div>
+    </div>
+
+    <!-- Vector Embedding Raw Visualization Sample -->
+    {% if sample_vector %}
+    <div class="bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 shadow-md space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-dna text-sky-400 text-sm"></i>
+                <h4 class="font-bold text-xs uppercase tracking-wider text-sky-400">SQL Vector Embedding Sample (Project #{{ sample_vector.project_id }})</h4>
+            </div>
+            <span class="font-mono text-xs text-slate-400">Dimension: {{ sample_vector.dimension }}-D Normalized Vector</span>
+        </div>
+
+        <p class="text-xs text-slate-300">
+            Below is an excerpt of the mathematical vector embedding generated for <span class="text-sky-300 font-semibold">"{{ sample_vector.title }}"</span> and persisted directly in the SQL <span class="font-mono text-amber-300">project_vectors</span> table:
+        </p>
+
+        <div class="p-3 bg-black/50 rounded-xl font-mono text-[11px] text-emerald-400 overflow-x-auto max-h-24">
+            [ {{ sample_vector.vector[:24] | join(', ') }}, ... ({{ sample_vector.dimension - 24 }} more float dimensions) ]
+        </div>
+
+        <div class="flex items-center space-x-2 text-[11px] text-slate-400 pt-1">
+            <span class="font-bold text-slate-300">Extracted Entity Tags:</span>
+            <div class="flex flex-wrap gap-1">
+                {% for tag in sample_vector.entity_tags[:8] %}
+                <span class="px-1.5 py-0.5 rounded bg-white/10 text-sky-200 text-[10px]">{{ tag }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function loadTableQuery(tableName) {
+    let query = "";
+    if (tableName === 'projects') {
+        query = "SELECT id, title, domain, status, max_similarity_score, submitted_by_name FROM projects";
+    } else if (tableName === 'project_vectors') {
+        query = "SELECT id, project_id, dimension, entity_tags_json, updated_at FROM project_vectors";
+    } else if (tableName === 'similarity_matches') {
+        query = "SELECT id, source_project_id, target_project_id, similarity_score, risk_level, common_entities FROM similarity_matches ORDER BY similarity_score DESC";
+    } else if (tableName === 'entity_resolutions') {
+        query = "SELECT id, project_a_id, project_b_id, action, faculty_name, merged_team_name, resolved_at FROM entity_resolutions";
+    } else if (tableName === 'users') {
+        query = "SELECT id, username, name, role, reg_no, department FROM users";
+    }
+    document.getElementById('sqlQueryInput').value = query;
+    executeSqlQuery();
+}
+
+async function executeSqlQuery() {
+    const sql = document.getElementById('sqlQueryInput').value.trim();
+    const container = document.getElementById('queryResultContainer');
+    const btn = document.getElementById('btnRunSql');
+
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[10px]"></i> Executing...`;
+
+    try {
+        const response = await fetch('/api/run_sql', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({sql: sql})
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            if (data.rows.length === 0) {
+                container.innerHTML = `<div class="p-4 bg-slate-50 text-slate-500 text-xs rounded-xl text-center">Query executed successfully. 0 rows returned.</div>`;
+            } else {
+                let html = `
+                <div class="text-xs text-slate-500 mb-2 flex items-center justify-between">
+                    <span>Returned <strong>${data.count}</strong> rows</span>
+                </div>
+                <table class="w-full text-left text-xs text-slate-700 border border-slate-200 rounded-xl overflow-hidden font-mono">
+                    <thead class="bg-slate-100 text-[11px] font-bold text-slate-600 uppercase border-b border-slate-200">
+                        <tr>
+                            ${data.columns.map(c => `<th class="px-4 py-2.5">${c}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        ${data.rows.map(r => `
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                ${data.columns.map(c => `<td class="px-4 py-2 max-w-xs truncate">${r[c] !== null ? r[c] : '<span class="text-slate-300">NULL</span>'}</td>`).join('')}
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>`;
+                container.innerHTML = html;
+            }
+        } else {
+            container.innerHTML = `<div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-mono">SQL Error: ${data.error}</div>`;
+        }
+    } catch (e) {
+        container.innerHTML = `<div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-mono">Network Error: ${e}</div>`;
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-play text-[10px]"></i> <span>Execute SQL</span>`;
+    }
+}
+
+// Auto-run default query on page load
+document.addEventListener('DOMContentLoaded', () => {
+    executeSqlQuery();
+});
+</script>
+{% endblock %}

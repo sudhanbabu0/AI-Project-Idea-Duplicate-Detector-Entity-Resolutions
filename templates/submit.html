@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Project Proposal | SRM-AIDRS{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+
+    <!-- Header Banner -->
+    <div class="bg-gradient-to-r from-sky-900 to-slate-900 rounded-2xl p-6 text-white border border-sky-800/40 shadow-md">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+                <span class="text-xs uppercase font-bold text-sky-400 tracking-wider">Student Submission Portal</span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Submit Project Proposal</h1>
+                <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+                    Fill in your proposal details below or upload your report document (PDF, Word, or Text). The AI engine will extract and analyze your document content to evaluate originality against the university database.
+                </p>
+            </div>
+            <div class="hidden md:flex items-center space-x-2 bg-white/10 px-3 py-2 rounded-xl text-xs text-sky-200 border border-white/10 font-mono">
+                <i class="fa-solid fa-file-pdf text-rose-400"></i>
+                <span>PDF & Word Document Analyzer: Active</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid: Form + Live Pre-Checker -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        <!-- Form Column (7 Cols) -->
+        <div class="lg:col-span-7 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-5">
+            <h2 class="text-lg font-bold text-slate-800 pb-2 border-b border-slate-100 flex items-center">
+                <i class="fa-solid fa-file-pen text-sky-600 mr-2"></i>
+                <span>Proposal Details</span>
+            </h2>
+
+            <form action="{{ url_for('submit_project') }}" method="POST" enctype="multipart/form-data" id="submissionForm" class="space-y-4">
+
+                <!-- 1. Project Title -->
+                <div>
+                    <label for="title" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Project Title <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" id="title" name="title" required
+                           placeholder="e.g. Smart Attendance System using Face Recognition and Deep Learning"
+                           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all placeholder:text-slate-400">
+                </div>
+
+                <!-- 2. Domain / Specialization -->
+                <div>
+                    <label for="domain" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Domain / Specialization <span class="text-rose-500">*</span>
+                    </label>
+                    <select id="domain" name="domain" required
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all bg-white text-slate-700">
+                        <option value="">Select Domain...</option>
+                        <option value="Artificial Intelligence" selected>Artificial Intelligence & Machine Learning</option>
+                        <option value="Cybersecurity">Cybersecurity & Cloud Systems</option>
+                        <option value="Blockchain">Blockchain & Web3 Technologies</option>
+                        <option value="IoT & Embedded Systems">IoT & Embedded Systems</option>
+                        <option value="Robotics & AI">Robotics & Autonomous Navigation</option>
+                        <option value="Data Science">Data Science & Big Data Analytics</option>
+                        <option value="Full-Stack Web & Mobile">Full-Stack Web & Mobile Engineering</option>
+                    </select>
+                </div>
+
+                <!-- 3 & 4. Submitter Name & Lead Register Number -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="submitted_by_name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            Submitter Name <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" id="submitted_by_name" name="submitted_by_name" required
+                               placeholder="e.g. Sudhan Babu"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all">
+                    </div>
+
+                    <div>
+                        <label for="reg_no" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            Lead Register Number <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" id="reg_no" name="reg_no" required
+                               placeholder="e.g. RA2411047050032"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all font-mono">
+                    </div>
+                </div>
+
+                <!-- 5. Team Members (Names & Reg Nos) -->
+                <div>
+                    <label for="team_members" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Team Members (Names & Register Numbers)
+                    </label>
+                    <input type="text" id="team_members" name="team_members"
+                           placeholder="e.g. Sudhan Babu (RA2411047050032), Keerthi Vasaa (RA2411047050041), Dayanandan (RA2411047050029)"
+                           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all">
+                </div>
+
+                <!-- 6. Abstract & Problem Statement -->
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="abstract" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                            Abstract & Problem Statement
+                        </label>
+                        <span class="text-[11px] text-slate-400 font-medium">Or extracted from document below</span>
+                    </div>
+                    <textarea id="abstract" name="abstract" rows="4"
+                              placeholder="Describe your project concept, problem statement, and proposed innovation..."
+                              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all placeholder:text-slate-400"></textarea>
+                </div>
+
+                <!-- 7. Document Upload (PDF, Word .docx/.doc, TXT) -->
+                <div class="p-4 rounded-xl bg-slate-50 border-2 border-dashed border-slate-300 hover:border-sky-400 transition-colors">
+                    <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-file-arrow-up text-sky-600 mr-1.5 text-sm"></i>
+                        Upload Project Report / Document File
+                    </label>
+                    <p class="text-[11px] text-slate-500 mb-2">
+                        Upload your proposal report as a <strong>PDF, Word (.docx / .doc), or Text (.txt)</strong> document. The AI model extracts and evaluates the full document text for similarity.
+                    </p>
+                    <input type="file" id="proposal_file" name="proposal_file" accept=".pdf,.docx,.doc,.txt"
+                           class="block w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-sky-600 file:text-white hover:file:bg-sky-700 file:cursor-pointer cursor-pointer">
+                    <div id="fileExtractedInfo" class="hidden mt-2 text-[11px] font-mono text-emerald-700 font-semibold bg-emerald-50 p-2 rounded-lg border border-emerald-200"></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-4 flex flex-col sm:flex-row items-center gap-3">
+                    <button type="button" id="btnLivePrecheck"
+                            class="w-full sm:w-auto flex-1 inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-900 text-white font-bold px-6 py-3 rounded-xl transition-all text-sm shadow">
+                        <i class="fa-solid fa-bolt text-amber-400"></i>
+                        <span>Live Duplicate Pre-Check</span>
+                    </button>
+
+                    <button type="submit"
+                            class="w-full sm:w-auto flex-1 inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-sky-500/25 transition-all text-sm">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Submit Final Proposal</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Live Real-Time Pre-Check Results Widget (5 Cols) -->
+        <div class="lg:col-span-5 space-y-4">
+
+            <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid fa-gauge-high"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-sm">Live Originality Pre-Checker</h3>
+                    </div>
+                    <span id="precheckStatusIndicator" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-semibold">
+                        Ready
+                    </span>
+                </div>
+
+                <!-- Circular / Numeric Gauge Meter -->
+                <div class="py-6 text-center space-y-2">
+                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Estimated Similarity</div>
+                    <div class="flex items-baseline justify-center space-x-1">
+                        <span id="scoreDisplay" class="text-5xl font-black text-slate-300 font-mono">0.0</span>
+                        <span class="text-xl font-bold text-slate-400">%</span>
+                    </div>
+
+                    <!-- Visual Progress Bar -->
+                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden mt-3 shadow-inner">
+                        <div id="similarityProgressBar" class="h-3 rounded-full bg-slate-300 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+
+                    <!-- Risk Alert Badge -->
+                    <div id="riskBadgeContainer" class="pt-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">
+                            <i class="fa-solid fa-info-circle mr-1.5"></i>
+                            Enter title/abstract or choose a file, then click "Live Duplicate Pre-Check"
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Document Analysis Feedback -->
+                <div id="documentAnalysisBadge" class="hidden p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-900 space-y-1">
+                    <div class="font-bold flex items-center">
+                        <i class="fa-solid fa-file-lines text-sky-600 mr-1.5"></i>
+                        <span>Uploaded Document Analyzed</span>
+                    </div>
+                    <p id="documentAnalysisDetails" class="text-[11px] text-sky-800"></p>
+                </div>
+
+                <!-- Closest Database Match -->
+                <div class="space-y-3 pt-3 border-t border-slate-100">
+                    <div class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                        <span>Closest Database Match</span>
+                        <i class="fa-solid fa-database text-slate-400"></i>
+                    </div>
+
+                    <div id="matchDetailsContainer" class="p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-500">
+                        No check executed yet. Enter your project details or attach a file to evaluate against registered proposals.
+                    </div>
+
+                    <!-- Overlapping Shared Entities -->
+                    <div id="commonEntitiesSection" class="hidden space-y-1.5 pt-2">
+                        <div class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">Identical Concepts Detected:</div>
+                        <div id="commonEntitiesList" class="flex flex-wrap gap-1"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Template Samples for Testing -->
+            <div class="bg-sky-50/70 border border-sky-200 rounded-2xl p-4 text-xs space-y-3">
+                <div class="font-bold text-sky-950 flex items-center justify-between">
+                    <span>Quick Demo Test Scenarios</span>
+                    <i class="fa-solid fa-flask text-sky-600"></i>
+                </div>
+                <div class="grid grid-cols-1 gap-2">
+                    <button type="button" onclick="loadTestPreset('duplicate')"
+                            class="text-left p-2.5 rounded-xl bg-white border border-rose-200 hover:border-rose-400 shadow-xs transition-colors">
+                        <div class="font-bold text-rose-700 flex items-center justify-between">
+                            <span>1. Duplicate Test (Face Attendance)</span>
+                            <span class="text-[10px] bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded font-mono">>85% Expected</span>
+                        </div>
+                        <p class="text-slate-500 text-[10px] mt-0.5">Automated face recognition attendance proposal.</p>
+                    </button>
+
+                    <button type="button" onclick="loadTestPreset('moderate')"
+                            class="text-left p-2.5 rounded-xl bg-white border border-amber-200 hover:border-amber-400 shadow-xs transition-colors">
+                        <div class="font-bold text-amber-700 flex items-center justify-between">
+                            <span>2. Moderate Overlap (Medical AI)</span>
+                            <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-mono">55-75% Expected</span>
+                        </div>
+                        <p class="text-slate-500 text-[10px] mt-0.5">Skin cancer dermoscopy screening.</p>
+                    </button>
+
+                    <button type="button" onclick="loadTestPreset('original')"
+                            class="text-left p-2.5 rounded-xl bg-white border border-emerald-200 hover:border-emerald-400 shadow-xs transition-colors">
+                        <div class="font-bold text-emerald-700 flex items-center justify-between">
+                            <span>3. Unique Idea (Quantum Optical Cryptography)</span>
+                            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-mono"><20% Expected</span>
+                        </div>
+                        <p class="text-slate-500 text-[10px] mt-0.5">Free-space satellite quantum cryptography.</p>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Handle file selection change
+document.getElementById('proposal_file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const info = document.getElementById('fileExtractedInfo');
+    if (file) {
+        info.classList.remove('hidden');
+        info.innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i> Attached: <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB). Ready for AI vector analysis!`;
+    } else {
+        info.classList.add('hidden');
+    }
+});
+
+function loadTestPreset(type) {
+    if (type === 'duplicate') {
+        document.getElementById('title').value = "Automated Classroom Attendance System via Facial Biometrics";
+        document.getElementById('domain').value = "Artificial Intelligence";
+        document.getElementById('submitted_by_name').value = "Student Submitter";
+        document.getElementById('reg_no').value = "RA2411047050099";
+        document.getElementById('team_members').value = "Team A (RA2411047050099)";
+        document.getElementById('abstract').value = "This project aims to automate student attendance marking in college classrooms using OpenCV and deep convolutional neural networks. A video camera captures student faces in the classroom, identifies students using face recognition embeddings, and updates the attendance database in real time.";
+    } else if (type === 'moderate') {
+        document.getElementById('title').value = "Clinical Dermoscopy AI for Skin Lesion Screening";
+        document.getElementById('domain').value = "Artificial Intelligence";
+        document.getElementById('submitted_by_name').value = "Student Submitter";
+        document.getElementById('reg_no').value = "RA2411047050098";
+        document.getElementById('team_members').value = "Team B (RA2411047050098)";
+        document.getElementById('abstract').value = "A deep learning clinical screening system for detecting skin cancer from dermoscopic images using transfer learning on ISIC datasets with MobileNet architecture.";
+    } else if (type === 'original') {
+        document.getElementById('title').value = "Quantum Key Distribution Protocol Simulation for Satellite Optical Channels";
+        document.getElementById('domain').value = "Cybersecurity";
+        document.getElementById('submitted_by_name').value = "Student Submitter";
+        document.getElementById('reg_no').value = "RA2411047050097";
+        document.getElementById('team_members').value = "Team C (RA2411047050097)";
+        document.getElementById('abstract').value = "A simulation framework evaluating the security and photon loss rates of BB84 quantum cryptography across free-space satellite-to-ground optical communications using Qiskit quantum simulator.";
+    }
+    
+    document.getElementById('btnLivePrecheck').click();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Project Clearance Certificate #{{ project.id }} | SRMIST{% endblock %}
+
+{% block head %}
+<style>
+@media print {
+    header, footer, .no-print {
+        display: none !important;
+    }
+    body {
+        background-color: white !important;
+    }
+    .print-card {
+        border: 2px solid #0f172a !important;
+        box-shadow: none !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+
+    <!-- Action Toolbar (hidden on print) -->
+    <div class="no-print flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+        <a href="{{ url_for('my_submissions') }}" class="text-xs font-semibold text-sky-600 hover:underline flex items-center">
+            <i class="fa-solid fa-arrow-left mr-1.5"></i>Back to Submissions
+        </a>
+        <div class="flex items-center space-x-2">
+            <button onclick="window.print()" class="inline-flex items-center space-x-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow transition-all">
+                <i class="fa-solid fa-print"></i>
+                <span>Print Official Certificate</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Official Certificate Card -->
+    <div class="print-card bg-white rounded-3xl border-2 border-slate-300 shadow-xl p-8 sm:p-12 relative overflow-hidden text-slate-800">
+        <!-- Watermark / Seal Background -->
+        <div class="absolute right-6 bottom-6 opacity-5 pointer-events-none text-9xl font-black text-slate-900 font-serif">
+            SRM
+        </div>
+
+        <!-- College Header -->
+        <div class="text-center border-b-2 border-slate-900 pb-6 mb-6">
+            <div class="inline-flex items-center space-x-3 mb-2">
+                <div class="w-12 h-12 rounded-xl bg-slate-900 text-white font-black text-xl flex items-center justify-center shadow">
+                    SRM
+                </div>
+                <div class="text-left">
+                    <h2 class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 uppercase">SRM Institute of Science and Technology</h2>
+                    <p class="text-xs font-semibold text-slate-600">DEPARTMENT OF ARTIFICIAL INTELLIGENCE & COMPUTER SCIENCE</p>
+                </div>
+            </div>
+            <div class="text-xs font-mono uppercase tracking-widest text-slate-500 mt-1">
+                ACADEMIC YEAR 2026–2027 • B.TECH CSE (AI) FIRST REVIEW
+            </div>
+        </div>
+
+        <!-- Certificate Title -->
+        <div class="text-center space-y-1 mb-8">
+            <div class="inline-block px-4 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-extrabold uppercase tracking-widest border border-slate-300">
+                Official Verification Document
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-serif font-bold text-slate-900 mt-2">
+                Project Originality & Similarity Clearance Certificate
+            </h1>
+            <p class="text-xs text-slate-500 font-mono">
+                Document ID: SRM-AIDRS-2026-PRJ-{{ project.id }} • Timestamp: {{ project.created_at }}
+            </p>
+        </div>
+
+        <!-- Submitter & Project Details -->
+        <div class="space-y-6 text-sm">
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                <div>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Project Proposal Title</span>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900 mt-0.5 leading-snug">
+                        {{ project.title }}
+                    </h3>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs pt-2 border-t border-slate-200">
+                    <div>
+                        <span class="text-slate-400 font-medium">Domain / Specialization:</span>
+                        <div class="font-bold text-slate-800">{{ project.domain }}</div>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 font-medium">Lead Submitter & Register No:</span>
+                        <div class="font-bold text-slate-800">{{ project.submitted_by_name }} <span class="font-mono text-sky-700">({{ project.reg_no or 'N/A' }})</span></div>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <span class="text-slate-400 font-medium">Project Team Members:</span>
+                        <div class="font-semibold text-slate-800">{{ project.team_members or 'Sudhan Babu, Keerthi Vasaa, Dayanandan' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Abstract -->
+            <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Registered Abstract</span>
+                <p class="text-xs text-slate-700 leading-relaxed bg-white p-3 rounded-xl border border-slate-200">
+                    {{ project.abstract }}
+                </p>
+            </div>
+
+            <!-- Similarity Score Breakdown Box -->
+            <div class="p-5 rounded-2xl border-2 {% if project.status == 'DUPLICATE_FLAGGED' %}border-rose-300 bg-rose-50/40{% elif project.status == 'MERGED' %}border-purple-300 bg-purple-50/40{% else %}border-emerald-300 bg-emerald-50/40{% endif %}">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <span class="text-[11px] uppercase font-extrabold tracking-wider {% if project.status == 'DUPLICATE_FLAGGED' %}text-rose-700{% elif project.status == 'MERGED' %}text-purple-700{% else %}text-emerald-700{% endif %}">
+                            AI Vector Cosine Similarity Audit
+                        </span>
+                        <div class="text-3xl font-black font-mono mt-1 {% if project.status == 'DUPLICATE_FLAGGED' %}text-rose-700{% elif project.status == 'MERGED' %}text-purple-700{% else %}text-emerald-700{% endif %}">
+                            {{ project.max_similarity_score }}%
+                            <span class="text-xs font-sans font-bold text-slate-600 ml-1">Maximum Repository Overlap</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% if project.status == 'DUPLICATE_FLAGGED' %}
+                        <div class="px-4 py-2 rounded-xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider shadow">
+                            <i class="fa-solid fa-triangle-exclamation mr-1"></i>DUPLICATE FLAGGED
+                        </div>
+                        {% elif project.status == 'MERGED' %}
+                        <div class="px-4 py-2 rounded-xl bg-purple-600 text-white font-extrabold text-xs uppercase tracking-wider shadow">
+                            <i class="fa-solid fa-people-arrows mr-1"></i>MERGED COLLABORATION
+                        </div>
+                        {% elif project.status == 'APPROVED' %}
+                        <div class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-extrabold text-xs uppercase tracking-wider shadow">
+                            <i class="fa-solid fa-circle-check mr-1"></i>CLEARED ORIGINAL
+                        </div>
+                        {% else %}
+                        <div class="px-4 py-2 rounded-xl bg-amber-500 text-white font-extrabold text-xs uppercase tracking-wider shadow">
+                            <i class="fa-solid fa-clock mr-1"></i>PENDING REVIEW
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if top_match %}
+                <div class="mt-4 pt-3 border-t border-slate-200/80 text-xs text-slate-600 space-y-1">
+                    <div class="font-bold text-slate-700">Comparison Reference:</div>
+                    <div>Evaluated against: <span class="font-semibold text-slate-900">"{{ top_match.target_title }}"</span></div>
+                    <div class="flex items-center space-x-4 font-mono text-[11px] pt-1">
+                        <span>Title: {{ top_match.title_similarity }}%</span>
+                        <span>•</span>
+                        <span>Abstract: {{ top_match.abstract_similarity }}%</span>
+                        <span>•</span>
+                        <span>Entities: {{ top_match.entity_similarity }}%</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Signatures Block -->
+            <div class="pt-12 grid grid-cols-2 gap-8 text-center text-xs">
+                <div class="border-t border-slate-900 pt-2">
+                    <div class="font-bold text-slate-800 text-sm">Sudhan Babu / Keerthi / Dayanandan</div>
+                    <div class="text-slate-500 text-[11px]">Student Submitter / Capstone Team</div>
+                    <div class="text-slate-400 font-mono text-[10px]">RA2411047050032</div>
+                </div>
+
+                <div class="border-t border-slate-900 pt-2">
+                    <div class="font-bold text-slate-800 text-sm">Dr. S.P. Ramya</div>
+                    <div class="text-slate-500 text-[11px]">Faculty Project Guide & Coordinator</div>
+                    <div class="text-slate-400 text-[10px]">Department of Artificial Intelligence</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Network & Cloud Hosting | SRM-AIDRS{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+
+    <!-- Header Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white border border-sky-800/40 shadow-md">
+        <div class="flex items-center space-x-2 text-xs uppercase font-bold text-emerald-400 tracking-wider mb-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Live Network & Cloud Deployment Mode</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-black tracking-tight">Multi-Device Access & Cloud Hosting</h1>
+        <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+            This application is configured to run beyond <code class="text-sky-300 font-mono">localhost</code>. It binds to all network interfaces (<code class="text-emerald-300 font-mono">0.0.0.0</code>) and can be accessed across Wi-Fi networks or deployed online.
+        </p>
+    </div>
+
+    <!-- Live LAN Access Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+
+        <!-- LAN URL & Instructions (7 cols) -->
+        <div class="lg:col-span-7 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-wifi"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-sm">Local Area Network (Wi-Fi) Access</h3>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono text-[11px] font-bold">
+                    ONLINE
+                </span>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Any smartphone, laptop, or tablet connected to the same college Wi-Fi or mobile hotspot can access this application instantly using this network URL:
+            </p>
+
+            <!-- Network URL Callout Box -->
+            <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 text-center space-y-3">
+                <div>
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Live Public Web URL (Accessible Anywhere):</div>
+                    <a href="{{ public_url }}" target="_blank" class="text-base sm:text-lg font-black font-mono text-white hover:text-emerald-300 underline tracking-tight block mt-1 break-all select-all">
+                        {{ public_url }}
+                    </a>
+                </div>
+                <div class="border-t border-slate-800 pt-2 text-[11px] text-slate-400 font-mono">
+                    Local Wi-Fi Network Address: <span class="text-sky-300 font-semibold select-all">{{ lan_url }}</span>
+                </div>
+            </div>
+
+            <!-- How to present in review -->
+            <div class="bg-sky-50 rounded-xl p-4 border border-sky-100 text-xs text-sky-900 space-y-1.5">
+                <div class="font-bold flex items-center">
+                    <i class="fa-solid fa-lightbulb text-amber-500 mr-1.5"></i>
+                    <span>College Presentation Tip (Dr. S.P. Ramya / Review Panel)</span>
+                </div>
+                <p class="text-[11px] text-sky-800 leading-relaxed">
+                    When presenting your project, display the QR code on your slide or projector. Your review panel can scan it with their phone camera to interact with the duplicate detection portal live from their own devices!
+                </p>
+            </div>
+        </div>
+
+        <!-- Scannable QR Code (5 cols) -->
+        <div class="lg:col-span-5 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm text-center space-y-4">
+            <h3 class="font-bold text-slate-800 text-sm">Mobile Phone Instant Scan</h3>
+            <p class="text-slate-500 text-xs">Open your phone camera to scan and load the portal on your phone.</p>
+
+            <div class="inline-block p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl shadow-inner max-w-[220px] mx-auto">
+                <img src="{{ url_for('static', filename='img/qr_lan.svg') }}" alt="LAN QR Code" class="w-48 h-48 mx-auto">
+            </div>
+
+            <div class="text-[11px] font-mono text-slate-500">
+                Connects to: <span class="font-semibold text-slate-800">{{ lan_url }}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 1-Click Free Public Cloud Hosting Options -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8 space-y-4">
+        <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-sm">
+                <i class="fa-solid fa-cloud"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-slate-800 text-base">Public Internet Cloud Deployment Options</h3>
+                <p class="text-xs text-slate-500">Deploy this project to a live public URL (e.g. <span class="font-mono text-sky-600">https://srm-duplicate-detector.onrender.com</span>) in 2 minutes.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+
+            <!-- Option 1: Render / Railway -->
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2 flex flex-col justify-between">
+                <div>
+                    <div class="font-bold text-slate-800 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-server text-sky-600"></i>
+                        <span>1. Render / Railway</span>
+                    </div>
+                    <p class="text-slate-500 text-[11px] mt-1">
+                        Pre-configured with <code class="bg-slate-200 px-1 rounded">Procfile</code> and <code class="bg-slate-200 px-1 rounded">render.yaml</code>. Free tier hosted 24/7.
+                    </p>
+                    <div class="mt-2 font-mono text-[10px] bg-slate-900 text-emerald-400 p-2 rounded-lg">
+                        git push origin main<br>
+                        # Auto-deploys via Render
+                    </div>
+                </div>
+                <span class="text-[10px] font-bold text-sky-600">Config files ready in repo</span>
+            </div>
+
+            <!-- Option 2: Cloudflare Tunnel -->
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2 flex flex-col justify-between">
+                <div>
+                    <div class="font-bold text-slate-800 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-shield text-amber-600"></i>
+                        <span>2. Cloudflare Tunnel</span>
+                    </div>
+                    <p class="text-slate-500 text-[11px] mt-1">
+                        Instantly generates a public HTTPS domain from your laptop without opening router ports.
+                    </p>
+                    <div class="mt-2 font-mono text-[10px] bg-slate-900 text-amber-300 p-2 rounded-lg">
+                        cloudflared tunnel --url http://localhost:5000
+                    </div>
+                </div>
+                <span class="text-[10px] font-bold text-amber-600">Free instant HTTPS link</span>
+            </div>
+
+            <!-- Option 3: Localtunnel -->
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2 flex flex-col justify-between">
+                <div>
+                    <div class="font-bold text-slate-800 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-globe text-emerald-600"></i>
+                        <span>3. Localtunnel / Ngrok</span>
+                    </div>
+                    <p class="text-slate-500 text-[11px] mt-1">
+                        Zero install browser tunnel that routes live external internet traffic straight to this port.
+                    </p>
+                    <div class="mt-2 font-mono text-[10px] bg-slate-900 text-sky-300 p-2 rounded-lg">
+                        npx localtunnel --port 5000
+                    </div>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-600">Zero-setup rapid sharing</span>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

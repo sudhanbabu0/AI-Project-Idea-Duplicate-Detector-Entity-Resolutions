@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Submission Receipt #{{ project.id }} | SRM-AIDRS{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+
+    <!-- Confirmation Hero Card -->
+    <div class="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-lg text-center space-y-4">
+        <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-sm">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <div class="space-y-1">
+            <span class="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest">
+                Verification ID: SRM-2026-PRJ-{{ project.id }}
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Project Proposal Submitted Successfully!
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+                Your proposal and document report have been indexed with AI vector representations and recorded into the SRMIST database.
+            </p>
+        </div>
+
+        <!-- Summary Pill -->
+        <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full text-xs font-bold {% if project.status == 'DUPLICATE_FLAGGED' %}bg-rose-100 text-rose-800 border border-rose-300{% elif project.status == 'MERGED' %}bg-purple-100 text-purple-800 border border-purple-300{% else %}bg-emerald-100 text-emerald-800 border border-emerald-300{% endif %}">
+            <span>Status: {{ project.status }} ({{ project.max_similarity_score }}% Similarity)</span>
+        </div>
+    </div>
+
+    <!-- Receipt Details Card -->
+    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 text-xs">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+            <span class="font-bold text-slate-800 uppercase tracking-wider text-[11px]">Submission Record Details</span>
+            <span class="font-mono text-slate-400">{{ project.created_at }}</span>
+        </div>
+
+        <div class="space-y-3">
+            <div>
+                <span class="text-slate-400 font-semibold block text-[10px] uppercase">Project Title</span>
+                <div class="text-sm font-bold text-slate-900 mt-0.5">{{ project.title }}</div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+                <div>
+                    <span class="text-slate-400 font-semibold block text-[10px] uppercase">Domain / Specialization</span>
+                    <div class="font-bold text-slate-800 mt-0.5">{{ project.domain }}</div>
+                </div>
+
+                <div>
+                    <span class="text-slate-400 font-semibold block text-[10px] uppercase">Lead Submitter & Register No</span>
+                    <div class="font-bold text-slate-800 mt-0.5">{{ project.submitted_by_name }} <span class="font-mono text-sky-700">({{ project.reg_no }})</span></div>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <span class="text-slate-400 font-semibold block text-[10px] uppercase">Team Members</span>
+                    <div class="font-medium text-slate-700 mt-0.5">{{ project.team_members or 'N/A' }}</div>
+                </div>
+
+                {% if project.uploaded_file %}
+                <div class="sm:col-span-2 p-3 bg-sky-50 rounded-xl border border-sky-100 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-file-pdf text-rose-500 text-sm"></i>
+                        <span class="font-bold text-slate-800">Uploaded Document:</span>
+                        <span class="font-mono text-sky-700">{{ project.uploaded_file }}</span>
+                    </div>
+                    <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">AI Analyzed</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <span class="text-slate-400 font-semibold block text-[10px] uppercase">Abstract</span>
+                <p class="text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 leading-relaxed mt-0.5">
+                    {{ project.abstract }}
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <a href="{{ url_for('view_certificate', project_id=project.id) }}" class="inline-flex items-center space-x-1.5 text-sky-600 hover:text-sky-800 font-bold bg-sky-50 hover:bg-sky-100 px-4 py-2 rounded-xl transition-colors">
+                <i class="fa-solid fa-certificate text-xs"></i>
+                <span>View Official Certificate & Report</span>
+            </a>
+
+            <a href="{{ url_for('index') }}" class="inline-flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold px-5 py-2 rounded-xl transition-colors">
+                <i class="fa-solid fa-house text-xs"></i>
+                <span>Back to Portal Home</span>
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

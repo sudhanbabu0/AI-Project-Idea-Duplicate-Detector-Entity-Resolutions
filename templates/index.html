@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+
+{% block title %}SRMIST AI Project Proposal & Duplicate Detector Portal{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Top Hero / Academic Banner -->
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 border border-sky-800/40 p-8 sm:p-12 text-white shadow-xl">
+        <div class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-sky-500/10 blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-16 -bottom-16 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-4xl space-y-4">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30 text-xs font-semibold">
+                <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+                <span>SRMIST Department of AI & CSE • Project Review 1</span>
+            </div>
+            
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+                AI Project Idea Duplicate Detector & <span class="bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-300 bg-clip-text text-transparent">Entity Resolution</span>
+            </h1>
+
+            <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                An intelligent DBMS extension designed to tackle the common university problem of students submitting duplicate or heavily overlapping project proposals under different wording. Combines relational SQL tables with dense AI vector embeddings to analyze reports and detect duplicates in real-time.
+            </p>
+
+            <!-- Academic Supervision Cards -->
+            <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                    <div>
+                        <div class="text-slate-400 text-[11px]">Project Guide & Review Coordinator</div>
+                        <div class="text-white font-bold text-sm">{{ guide_name }}</div>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="text-slate-400 text-[11px]">Core Capstone Team</div>
+                        <div class="text-white font-semibold text-xs">Sudhan Babu, Keerthi Vasaa, Dayanandan</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PUBLIC / VISITOR VIEW (When NOT logged in) ================= -->
+    <!-- Privacy Protected: Does NOT show past proposals, duplicate lists, or SQL data to general submitters -->
+    {% if not current_user %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch pt-2">
+
+        <!-- Card 1: Submit Proposal -->
+        <div class="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-md hover:shadow-xl transition-all flex flex-col justify-between space-y-6">
+            <div class="space-y-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-sky-500/25">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight">Submit New Project Proposal</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Students can submit project proposals by entering their title, domain, team details, and abstract — or upload a <strong>PDF, Word (.docx), or Text report</strong> for automated AI document similarity analysis.
+                </p>
+
+                <div class="p-4 bg-sky-50 rounded-2xl border border-sky-100 text-xs text-sky-950 space-y-2">
+                    <div class="font-bold flex items-center">
+                        <i class="fa-solid fa-file-shield text-sky-600 mr-2 text-sm"></i>
+                        <span>Features for Student Submitters:</span>
+                    </div>
+                    <ul class="space-y-1 text-sky-900 text-xs list-disc list-inside">
+                        <li>Upload project reports as PDF or Word documents</li>
+                        <li>Automated text extraction & semantic vector embedding</li>
+                        <li>Instant private originality check before final submission</li>
+                        <li>Official Submission Receipt & Verification ID</li>
+                    </ul>
+                </div>
+            </div>
+
+            <a href="{{ url_for('submit_project') }}" class="w-full inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-sky-500/25 text-sm transition-all hover:scale-[1.01]">
+                <span>Open Submission Portal</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+        </div>
+
+        <!-- Card 2: Authorized Sign In -->
+        <div class="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-md hover:shadow-xl transition-all flex flex-col justify-between space-y-6">
+            <div class="space-y-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 text-white flex items-center justify-center text-2xl shadow-lg">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight">Authorized Personnel Access</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Access to the project repository, duplicate review queues, vector search, and SQL database is protected. Only the <strong>Project Guide</strong> and <strong>Team Members</strong> can log in to view and manage proposals.
+                </p>
+
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2.5">
+                    <div class="font-bold text-slate-800 uppercase tracking-wider text-[11px]">Authorized Review Roles:</div>
+                    <div class="space-y-1.5 font-mono text-[11px] text-slate-600">
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200">
+                            <span>1. Dr. S.P. Ramya</span>
+                            <span class="text-amber-600 font-bold">Faculty Guide & Reviewer</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200">
+                            <span>2. Sudhan Babu (RA2411047050032)</span>
+                            <span class="text-sky-600 font-bold">Team Lead</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200">
+                            <span>3. Keerthi Vasaa & Dayanandan</span>
+                            <span class="text-sky-600 font-bold">Core Team</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{{ url_for('login') }}" class="w-full inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 px-6 rounded-2xl shadow text-sm transition-all hover:scale-[1.01]">
+                <i class="fa-solid fa-lock text-amber-400 mr-1"></i>
+                <span>Sign In to Access Dashboard & Repository</span>
+            </a>
+        </div>
+
+    </div>
+    {% endif %}
+
+    <!-- ================= AUTHORIZED VIEW (Only when Logged In as Guide or Team Member) ================= -->
+    {% if current_user %}
+    <div class="space-y-8">
+
+        <!-- Logged-in Header Badge -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div class="flex items-center space-x-3">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                <div>
+                    <span class="font-bold text-emerald-950 text-sm">Authenticated Access: {{ current_user.name }}</span>
+                    <span class="text-emerald-800 ml-1">({{ current_user.role|capitalize }} • {{ current_user.reg_no or 'SRMIST' }})</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <a href="{{ url_for('admin_dashboard') }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg transition-colors">
+                    <i class="fa-solid fa-shield-halved mr-1"></i>Open Review Queue
+                </a>
+                <a href="{{ url_for('my_submissions') }}" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold px-3 py-1.5 rounded-lg transition-colors">
+                    <i class="fa-solid fa-folder-open mr-1"></i>All Proposals
+                </a>
+            </div>
+        </div>
+
+        <!-- Executive Statistics Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center justify-between">
+                <div>
+                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Submissions</div>
+                    <div class="text-3xl font-extrabold text-slate-800 mt-1">{{ stats.total_projects }}</div>
+                    <div class="text-[11px] text-slate-400 mt-1">Across Department Domains</div>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-rose-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <div class="text-xs font-semibold text-rose-600 uppercase tracking-wider">Duplicate Warnings (>80%)</div>
+                    <div class="text-3xl font-extrabold text-rose-600 mt-1">{{ stats.flagged_projects }}</div>
+                    <div class="text-[11px] text-rose-500/80 mt-1">Flagged for Faculty Resolution</div>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-purple-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <div class="text-xs font-semibold text-purple-600 uppercase tracking-wider">Merged Collaborations</div>
+                    <div class="text-3xl font-extrabold text-purple-600 mt-1">{{ stats.merged_projects }}</div>
+                    <div class="text-[11px] text-purple-500/80 mt-1">Joint Student Teams Formed</div>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-people-arrows"></i>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-emerald-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Approved Original</div>
+                    <div class="text-3xl font-extrabold text-emerald-600 mt-1">{{ stats.approved_projects }}</div>
+                    <div class="text-[11px] text-emerald-500/80 mt-1">Cleared Unique Ideas</div>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- High Risk Matches Section (Only visible to authenticated personnel) -->
+        {% if high_matches %}
+        <div class="bg-amber-50/70 border border-amber-300 rounded-2xl p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-amber-950 text-base">Top Semantic Similarity Matches Detected</h3>
+                        <p class="text-amber-800 text-xs">Projects exhibiting heavy conceptual overlap requiring Faculty Coordinator resolution.</p>
+                    </div>
+                </div>
+                <a href="{{ url_for('admin_dashboard') }}" class="text-xs font-bold text-amber-900 bg-amber-200 hover:bg-amber-300 px-3.5 py-2 rounded-lg transition-colors">
+                    View Full Review Queue &rarr;
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for m in high_matches %}
+                <div class="bg-white rounded-xl p-4 border border-amber-200/90 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-xs mb-2">
+                            <span class="font-mono text-slate-500">Match ID: #{{ m.id }}</span>
+                            <span class="px-2 py-0.5 rounded-full font-bold text-[11px] {% if m.similarity_score >= 80 %}bg-rose-100 text-rose-700 border border-rose-300{% else %}bg-amber-100 text-amber-800 border border-amber-300{% endif %}">
+                                {{ m.similarity_score }}% Match
+                            </span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                                <span class="text-[10px] font-bold text-sky-600 uppercase">Proposal A:</span>
+                                <div class="font-semibold text-slate-800 text-xs">{{ m.source_title }}</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">By: {{ m.source_author }} ({{ m.source_reg or 'SRM' }})</div>
+                            </div>
+
+                            <div class="flex items-center justify-center text-amber-500 text-xs">
+                                <i class="fa-solid fa-arrows-up-down"></i>
+                                <span class="mx-2 text-[10px] font-semibold uppercase tracking-wider text-amber-700">Semantic Overlap</span>
+                            </div>
+
+                            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                                <span class="text-[10px] font-bold text-indigo-600 uppercase">Proposal B:</span>
+                                <div class="font-semibold text-slate-800 text-xs">{{ m.target_title }}</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">By: {{ m.target_author }} ({{ m.target_reg or 'SRM' }})</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-[11px] font-medium text-slate-500">
+                            <i class="fa-solid fa-tags text-slate-400 mr-1"></i>Risk: {{ m.risk_level }}
+                        </span>
+                        <a href="{{ url_for('side_by_side_resolution', match_id=m.id) }}" class="inline-flex items-center space-x-1.5 text-xs font-bold text-sky-600 hover:text-sky-800 bg-sky-50 hover:bg-sky-100 px-3 py-1.5 rounded-lg transition-colors">
+                            <span>Side-by-Side Review</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent Submissions Overview Table (Only visible to authenticated personnel) -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/50">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-base">Active Repository Submissions</h3>
+                    <p class="text-xs text-slate-500">Proposals registered with AI vector representations and similarity benchmarks.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <a href="{{ url_for('my_submissions') }}" class="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 px-3 py-1.5 rounded-lg transition-colors">
+                        View All ({{ stats.total_projects }})
+                    </a>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-600">
+                    <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-100">
+                        <tr>
+                            <th class="px-6 py-3">ID</th>
+                            <th class="px-6 py-3">Project Title & Domain</th>
+                            <th class="px-6 py-3">Submitter / Team</th>
+                            <th class="px-6 py-3">Uploaded Report</th>
+                            <th class="px-6 py-3">Max Similarity</th>
+                            <th class="px-6 py-3">Status</th>
+                            <th class="px-6 py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for p in recent_projects %}
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="px-6 py-4 font-mono text-slate-400 font-semibold">#{{ p.id }}</td>
+                            <td class="px-6 py-4 max-w-xs">
+                                <div class="font-bold text-slate-800 text-xs">{{ p.title }}</div>
+                                <div class="text-[10px] text-sky-600 font-medium mt-0.5">{{ p.domain }}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="font-semibold text-slate-800">{{ p.submitted_by_name }}</div>
+                                <div class="text-slate-400 font-mono text-[11px]">{{ p.reg_no or 'SRM' }}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                {% if p.uploaded_file %}
+                                <a href="{{ url_for('download_proposal_file', project_id=p.id) }}" class="inline-flex items-center space-x-1 text-sky-600 hover:underline font-mono text-[11px]">
+                                    <i class="fa-solid fa-file-pdf text-rose-500"></i>
+                                    <span class="truncate max-w-[120px]">{{ p.uploaded_file }}</span>
+                                </a>
+                                {% else %}
+                                <span class="text-slate-400 text-[11px]">Text Only</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-bold font-mono text-xs {% if p.max_similarity_score >= 80 %}text-rose-600{% elif p.max_similarity_score >= 50 %}text-amber-600{% else %}text-emerald-600{% endif %}">
+                                        {{ p.max_similarity_score }}%
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                {% if p.status == 'DUPLICATE_FLAGGED' %}
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">DUPLICATE</span>
+                                {% elif p.status == 'MERGED' %}
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-300">MERGED</span>
+                                {% elif p.status == 'APPROVED' %}
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">APPROVED</span>
+                                {% else %}
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">PENDING</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <a href="{{ url_for('view_certificate', project_id=p.id) }}" class="text-sky-600 hover:text-sky-800 font-semibold text-xs bg-sky-50 px-2.5 py-1 rounded-md">
+                                    Report
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

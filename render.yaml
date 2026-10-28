@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: srm-project-duplicate-detector
+    env: python
+    buildCommand: pip install -r requirements.txt && python seed_data.py
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.8
+      - key: SECRET_KEY
+        generateValue: true

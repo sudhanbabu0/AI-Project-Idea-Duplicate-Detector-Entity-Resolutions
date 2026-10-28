@@ -1,0 +1,21 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+venv/
+env/
+.env
+.venv/
+
+# Temporary uploads (keep folder)
+uploads/*
+!uploads/.gitkeep
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Binaries
+*.exe

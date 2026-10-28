@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}Side-by-Side Resolution | AI Project Duplicate Detector{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Top Navigation & Summary Card -->
+    <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center space-x-2 text-xs mb-1">
+                <a href="{{ url_for('admin_dashboard') }}" class="text-sky-600 hover:underline font-semibold flex items-center">
+                    <i class="fa-solid fa-arrow-left mr-1"></i>Back to Admin Dashboard
+                </a>
+                <span class="text-slate-300">•</span>
+                <span class="font-mono text-slate-400">Pair Match ID #{{ m.id }}</span>
+            </div>
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight">Side-by-Side Duplicate Inspector & Entity Resolution</h1>
+            <p class="text-xs text-slate-500 mt-1">
+                Comparing conflicting project proposals. Overlapping terminology, concepts, and technical entities are highlighted below.
+            </p>
+        </div>
+
+        <!-- Similarity Metric Badge -->
+        <div class="flex items-center space-x-4 bg-slate-50 border border-slate-200 p-4 rounded-xl">
+            <div class="text-right">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Similarity Score</div>
+                <div class="text-3xl font-black font-mono {% if m.similarity_score >= 80 %}text-rose-600{% elif m.similarity_score >= 50 %}text-amber-600{% else %}text-emerald-600{% endif %}">
+                    {{ m.similarity_score }}%
+                </div>
+            </div>
+            <div class="w-12 h-12 rounded-xl {% if m.similarity_score >= 80 %}bg-rose-100 text-rose-600{% elif m.similarity_score >= 50 %}bg-amber-100 text-amber-600{% else %}bg-emerald-100 text-emerald-600{% endif %} flex items-center justify-center text-xl">
+                <i class="fa-solid fa-scale-unbalanced-flip"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metric Breakdown Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs text-xs">
+        <div class="p-3 bg-slate-50 rounded-lg">
+            <div class="text-slate-400 text-[10px] uppercase font-bold">Title Similarity</div>
+            <div class="text-lg font-bold text-slate-800 font-mono mt-0.5">{{ m.title_similarity }}%</div>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-lg">
+            <div class="text-slate-400 text-[10px] uppercase font-bold">Abstract Semantic Cosine</div>
+            <div class="text-lg font-bold text-slate-800 font-mono mt-0.5">{{ m.abstract_similarity }}%</div>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-lg">
+            <div class="text-slate-400 text-[10px] uppercase font-bold">Entity Jaccard Overlap</div>
+            <div class="text-lg font-bold text-slate-800 font-mono mt-0.5">{{ m.entity_similarity }}%</div>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-lg">
+            <div class="text-slate-400 text-[10px] uppercase font-bold">Domain Concordance</div>
+            <div class="text-lg font-bold text-emerald-600 font-mono mt-0.5">Matched (100%)</div>
+        </div>
+    </div>
+
+    <!-- Common Shared Entities Tags -->
+    {% if common_entities %}
+    <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-4 text-xs space-y-2">
+        <div class="flex items-center space-x-2 text-amber-900 font-bold">
+            <i class="fa-solid fa-tags"></i>
+            <span>Identical Extracted Technical Entities ({{ common_entities|length }} common terms):</span>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+            {% for e in common_entities %}
+            <span class="px-2.5 py-1 rounded-md bg-white border border-amber-300 text-amber-950 font-semibold font-mono text-[11px] shadow-2xs">
+                {{ e }}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Side-by-Side Diff Comparison Columns -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Column 1: Proposal A -->
+        <div class="bg-white rounded-2xl border-2 border-sky-300 shadow-sm p-6 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <span class="px-2.5 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-bold uppercase tracking-wider">
+                    Proposal A (Source #{{ m.source_project_id }})
+                </span>
+                <span class="text-xs font-mono text-slate-400 font-semibold">Status: {{ m.p1_status }}</span>
+            </div>
+
+            <!-- Title -->
+            <div>
+                <label class="block text-[11px] uppercase font-bold text-slate-400 tracking-wider mb-1">Project Title</label>
+                <div class="font-bold text-slate-900 text-base leading-snug p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    {{ hl_title1|safe }}
+                </div>
+            </div>
+
+            <!-- Abstract -->
+            <div>
+                <label class="block text-[11px] uppercase font-bold text-slate-400 tracking-wider mb-1">Abstract / Problem Statement</label>
+                <div class="text-xs text-slate-700 leading-relaxed p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2 max-h-56 overflow-y-auto">
+                    {{ hl_abstract1|safe }}
+                </div>
+            </div>
+
+            <!-- Methodology -->
+            <div>
+                <label class="block text-[11px] uppercase font-bold text-slate-400 tracking-wider mb-1">Methodology</label>
+                <div class="text-xs text-slate-600 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    {{ m.p1_methodology or 'Not specified' }}
+                </div>
+            </div>
+
+            <!-- Tech Stack & Authors -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2 border-t border-slate-100">
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-slate-400">Tech Stack</label>
+                    <div class="font-semibold text-slate-700 mt-0.5">{{ m.p1_tech }}</div>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-slate-400">Submitter & Team</label>
+                    <div class="font-semibold text-slate-700 mt-0.5">{{ m.p1_author }}</div>
+                    <div class="text-slate-400 font-mono text-[11px]">{{ m.p1_team }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 2: Proposal B -->
+        <div class="bg-white rounded-2xl border-2 border-indigo-300 shadow-sm p-6 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <span class="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold uppercase tracking-wider">
+                    Proposal B (Target #{{ m.target_project_id }})
+                </span>
+                <span class="text-xs font-mono text-slate-400 font-semibold">Status: {{ m.p2_status }}</span>
+            </div>
+
+            <!-- Title -->
+            <div>
+                <label class="block text-[11px] uppercase font-bold text-slate-400 tracking-wider mb-1">Project Title</label>
+                <div class="font-bold text-slate-900 text-base leading-snug p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    {{ hl_title2|safe }}
+                </div>
+            </div>
+
+            <!-- Abstract -->
+            <div>
+                <label class="block text-[11px] uppercase font-bold text-slate-400 tracking-wider mb-1">Abstract / Problem Statement</label>
+                <div class="text-xs text-slate-700 leading-relaxed p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2 max-h-56 overflow-y-auto">
+                    {{ hl_abstract2|safe }}
+                </div>
+            </div>
+
+            <!-- Methodology -->
+            <div>
+                <label class="block text-[11px] uppercase font-bold text-slate-400 tracking-wider mb-1">Methodology</label>
+                <div class="text-xs text-slate-600 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    {{ m.p2_methodology or 'Not specified' }}
+                </div>
+            </div>
+
+            <!-- Tech Stack & Authors -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2 border-t border-slate-100">
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-slate-400">Tech Stack</label>
+                    <div class="font-semibold text-slate-700 mt-0.5">{{ m.p2_tech }}</div>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-slate-400">Submitter & Team</label>
+                    <div class="font-semibold text-slate-700 mt-0.5">{{ m.p2_author }}</div>
+                    <div class="text-slate-400 font-mono text-[11px]">{{ m.p2_team }}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Faculty Entity Resolution Action Form (Slide 6 & Slide 8) -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-md p-6 sm:p-8 space-y-6">
+        <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center font-bold text-lg">
+                <i class="fa-solid fa-gavel"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-slate-800">Faculty Entity Resolution & Decision</h3>
+                <p class="text-xs text-slate-500">Select an academic resolution action as specified in SRMIST project review guidelines.</p>
+            </div>
+        </div>
+
+        <form id="resolutionForm" class="space-y-5">
+            <input type="hidden" id="match_id" value="{{ m.id }}">
+            <input type="hidden" id="project_a_id" value="{{ m.source_project_id }}">
+            <input type="hidden" id="project_b_id" value="{{ m.target_project_id }}">
+
+            <!-- Action Select Options -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <label class="cursor-pointer border-2 border-purple-200 hover:border-purple-500 rounded-xl p-4 flex flex-col justify-between transition-all has-[:checked]:border-purple-600 has-[:checked]:bg-purple-50/50">
+                    <input type="radio" name="resolutionAction" value="MERGED_COLLABORATION" class="sr-only" checked>
+                    <div>
+                        <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-2 text-xs font-bold">
+                            <i class="fa-solid fa-people-arrows"></i>
+                        </div>
+                        <div class="font-bold text-slate-800 text-xs">Merge Teams</div>
+                        <p class="text-slate-500 text-[11px] mt-1">Combine both student groups into a unified capstone project team.</p>
+                    </div>
+                    <span class="mt-3 text-[10px] font-bold text-purple-700 uppercase">Recommended</span>
+                </label>
+
+                <label class="cursor-pointer border-2 border-slate-200 hover:border-emerald-500 rounded-xl p-4 flex flex-col justify-between transition-all has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/50">
+                    <input type="radio" name="resolutionAction" value="APPROVED_BOTH" class="sr-only">
+                    <div>
+                        <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2 text-xs font-bold">
+                            <i class="fa-solid fa-check-double"></i>
+                        </div>
+                        <div class="font-bold text-slate-800 text-xs">Approve Both</div>
+                        <p class="text-slate-500 text-[11px] mt-1">Sufficient technical divergence exists. Clear both for development.</p>
+                    </div>
+                </label>
+
+                <label class="cursor-pointer border-2 border-slate-200 hover:border-rose-500 rounded-xl p-4 flex flex-col justify-between transition-all has-[:checked]:border-rose-600 has-[:checked]:bg-rose-50/50">
+                    <input type="radio" name="resolutionAction" value="REJECTED_DUPLICATE" class="sr-only">
+                    <div>
+                        <div class="w-7 h-7 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center mb-2 text-xs font-bold">
+                            <i class="fa-solid fa-ban"></i>
+                        </div>
+                        <div class="font-bold text-slate-800 text-xs">Reject Proposal A</div>
+                        <p class="text-slate-500 text-[11px] mt-1">Reject as duplicate of existing registered proposal B.</p>
+                    </div>
+                </label>
+
+                <label class="cursor-pointer border-2 border-slate-200 hover:border-amber-500 rounded-xl p-4 flex flex-col justify-between transition-all has-[:checked]:border-amber-600 has-[:checked]:bg-amber-50/50">
+                    <input type="radio" name="resolutionAction" value="REVISION_REQUESTED" class="sr-only">
+                    <div>
+                        <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center mb-2 text-xs font-bold">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </div>
+                        <div class="font-bold text-slate-800 text-xs">Request Revision</div>
+                        <p class="text-slate-500 text-[11px] mt-1">Instruct students to re-scope methodology or dataset.</p>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Collaborative Team Name (Shown when Merge selected) -->
+            <div id="mergedNameField" class="space-y-1">
+                <label for="merged_team_name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Combined Collaborative Team Title / Name
+                </label>
+                <input type="text" id="merged_team_name"
+                       value="Joint Biometric Attendance & Vision Team"
+                       placeholder="e.g. Joint Face Recognition & Vision Analytics Team"
+                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-purple-500 outline-none">
+            </div>
+
+            <!-- Notes -->
+            <div class="space-y-1">
+                <label for="resolution_notes" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Faculty Coordinator Evaluation Notes & Justification <span class="text-rose-500">*</span>
+                </label>
+                <textarea id="resolution_notes" rows="3" required
+                          placeholder="Provide reasons for resolution, allocated guide directives, and shared workload division..."
+                          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 outline-none">High conceptual overlap ({{ m.similarity_score }}% similarity) detected between both proposals. Approved to merge into a single joint capstone team with split implementation responsibilities under Dr. S.P. Ramya.</textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-2 flex items-center justify-end space-x-3">
+                <a href="{{ url_for('admin_dashboard') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                    Cancel
+                </a>
+                <button type="button" onclick="executeResolution()" id="btnSubmitResolution"
+                        class="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-md text-xs transition-all">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Execute Academic Resolution</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function executeResolution() {
+    const btn = document.getElementById('btnSubmitResolution');
+    const matchId = document.getElementById('match_id').value;
+    const projectAId = document.getElementById('project_a_id').value;
+    const projectBId = document.getElementById('project_b_id').value;
+    const action = document.querySelector('input[name="resolutionAction"]:checked').value;
+    const notes = document.getElementById('resolution_notes').value;
+    const mergedName = document.getElementById('merged_team_name').value;
+
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Processing...`;
+
+    try {
+        const response = await fetch('/api/resolve_match', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                match_id: parseInt(matchId),
+                project_a_id: parseInt(projectAId),
+                project_b_id: parseInt(projectBId),
+                action: action,
+                notes: notes,
+                merged_name: mergedName
+            })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Academic Resolution executed successfully!');
+            window.location.href = "{{ url_for('admin_dashboard') }}";
+        } else {
+            alert('Error: ' + (data.error || 'Could not process resolution.'));
+            btn.disabled = false;
+            btn.innerHTML = `Execute Academic Resolution`;
+        }
+    } catch (err) {
+        alert('Network error while processing resolution: ' + err);
+        btn.disabled = false;
+        btn.innerHTML = `Execute Academic Resolution`;
+    }
+}
+</script>
+{% endblock %}

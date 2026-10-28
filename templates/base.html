@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SRMIST AI Project Duplicate Detector & Entity Resolution{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        srm: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            gold: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+
+    <!-- Top College Header Bar -->
+    <header class="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 text-white border-b border-sky-800/40 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand & Logo -->
+                <div class="flex items-center space-x-3">
+                    <a href="{{ url_for('index') }}" class="flex items-center space-x-3 group">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-sky-500/20 group-hover:scale-105 transition-transform">
+                            SRM
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-extrabold text-base tracking-tight text-white group-hover:text-sky-300 transition-colors">SRM-AIDRS</span>
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30 font-medium">B.Tech AI 3rd Year</span>
+                            </div>
+                            <p class="text-[11px] text-slate-300 hidden sm:block">AI Project Idea Duplicate Detector & Entity Resolution</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Navigation Links (Protected Role-Based Access) -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <a href="{{ url_for('index') }}" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors {% if request.endpoint == 'index' %}text-sky-400 bg-white/10{% else %}text-slate-200{% endif %}">
+                        <i class="fa-solid fa-house mr-1.5"></i>Home
+                    </a>
+                    <a href="{{ url_for('submit_project') }}" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors {% if request.endpoint == 'submit_project' %}text-sky-400 bg-white/10{% else %}text-slate-200{% endif %}">
+                        <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>Submit Proposal
+                    </a>
+
+                    <!-- Protected Links: Shown ONLY to Logged-in Personnel (Guide & Team Members) -->
+                    {% if current_user %}
+                    <a href="{{ url_for('my_submissions') }}" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors {% if request.endpoint == 'my_submissions' %}text-sky-400 bg-white/10{% else %}text-slate-200{% endif %}">
+                        <i class="fa-solid fa-folder-open mr-1.5"></i>Repository
+                    </a>
+                    <a href="{{ url_for('admin_dashboard') }}" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors {% if request.endpoint == 'admin_dashboard' or request.endpoint == 'side_by_side_resolution' %}text-sky-400 bg-white/10{% else %}text-slate-200{% endif %}">
+                        <i class="fa-solid fa-shield-halved mr-1.5"></i>Faculty Review
+                    </a>
+                    <a href="{{ url_for('semantic_search') }}" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors {% if request.endpoint == 'semantic_search' %}text-sky-400 bg-white/10{% else %}text-slate-200{% endif %}">
+                        <i class="fa-solid fa-magnifying-glass mr-1.5"></i>Vector Search
+                    </a>
+                    <a href="{{ url_for('database_inspector') }}" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors {% if request.endpoint == 'database_inspector' %}text-sky-400 bg-white/10{% else %}text-slate-200{% endif %}">
+                        <i class="fa-solid fa-database mr-1.5"></i>SQL Tables
+                    </a>
+                    {% endif %}
+                </nav>
+
+                <!-- Right Side: User & Network Indicator -->
+                <div class="flex items-center space-x-3">
+                    <!-- Live Public Internet URL Badge -->
+                    <a href="{{ public_url }}" target="_blank" title="Open Live Public Website on Internet" class="flex items-center space-x-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-full text-xs font-semibold hover:bg-emerald-500/30 transition-all shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="hidden sm:inline">LIVE ON WEB</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+                    </a>
+
+                    <!-- User Account / Role -->
+                    {% if current_user %}
+                    <div class="flex items-center space-x-2">
+                        <div class="text-right hidden lg:block">
+                            <div class="text-xs font-bold text-white leading-tight">{{ current_user.name }}</div>
+                            <div class="text-[10px] text-sky-300 font-mono capitalize">{{ current_user.role }} | {{ current_user.reg_no or 'SRMIST' }}</div>
+                        </div>
+                        <a href="{{ url_for('logout') }}" class="p-2 text-slate-300 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors" title="Logout">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </a>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs px-3.5 py-1.5 rounded-lg shadow transition-all">
+                        <i class="fa-solid fa-right-to-bracket mr-1"></i>Sign In
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 w-full">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="p-4 mb-3 rounded-xl border flex items-center justify-between text-sm shadow-sm transition-all
+                        {% if category == 'success' %} bg-emerald-50 border-emerald-300 text-emerald-800
+                        {% elif category == 'warning' %} bg-amber-50 border-amber-300 text-amber-800
+                        {% elif category == 'error' %} bg-rose-50 border-rose-300 text-rose-800
+                        {% else %} bg-sky-50 border-sky-300 text-sky-800 {% endif %}">
+                        <div class="flex items-center space-x-3">
+                            <i class="{% if category == 'success' %}fa-solid fa-circle-check text-emerald-500
+                                       {% elif category == 'warning' %}fa-solid fa-triangle-exclamation text-amber-500
+                                       {% elif category == 'error' %}fa-solid fa-circle-xmark text-rose-500
+                                       {% else %}fa-solid fa-circle-info text-sky-500{% endif %} text-lg"></i>
+                            <span class="font-medium">{{ message }}</span>
+                        </div>
+                        <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 text-xs py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-2 text-white font-bold text-sm mb-2">
+                        <div class="w-6 h-6 rounded bg-sky-600 flex items-center justify-center text-xs">SRM</div>
+                        <span>SRM Institute of Science and Technology</span>
+                    </div>
+                    <p class="text-slate-400 text-xs leading-relaxed max-w-md">
+                        AI Project Idea Duplicate Detector & Entity Resolution System. An intelligent DBMS extension combining relational SQL data storage with dense vector embeddings to eliminate redundant project approvals in real-time.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-2">Project Team Members</h4>
+                    <ul class="space-y-1 text-slate-300 text-xs">
+                        <li>1. Sudhan Babu - <span class="font-mono text-sky-400">RA2411047050032</span></li>
+                        <li>2. Keerthi Vasaa - <span class="font-mono text-sky-400">RA2411047050041</span></li>
+                        <li>3. Dayanandan - <span class="font-mono text-sky-400">RA2411047050029</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-2">Academic Information</h4>
+                    <p class="text-xs text-slate-300"><span class="text-slate-400">Department:</span> AI - 3rd Year (CSE)</p>
+                    <p class="text-xs text-slate-300 mt-1"><span class="text-slate-400">Project Guide:</span> <span class="text-amber-300 font-medium">Dr. S.P. Ramya</span></p>
+                    <p class="text-xs text-slate-300 mt-1"><span class="text-slate-400">Academic Year:</span> 2026–2027</p>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 pt-4 flex flex-col sm:flex-row items-center justify-between text-slate-400 text-[11px]">
+                <p>&copy; 2026 SRMIST. All rights reserved. Database Management Systems & AI Capstone.</p>
+                <div class="flex items-center space-x-4 mt-2 sm:mt-0 font-mono">
+                    <span>Server IP: {{ lan_ip }}:{{ port }}</span>
+                    <span>•</span>
+                    <a href="{{ url_for('network_hub') }}" class="text-sky-400 hover:underline">Deploy / Share Online</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

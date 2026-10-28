@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Authorized Sign In | SRM-AIDRS{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto space-y-6">
+
+    <!-- Card -->
+    <div class="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-lg space-y-6">
+
+        <!-- Top Header -->
+        <div class="text-center space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 text-white font-black text-xl flex items-center justify-center mx-auto shadow-md">
+                SRM
+            </div>
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight">
+                Authorized Personnel Sign In
+            </h1>
+            <p class="text-xs text-slate-500">
+                Reserved for Project Guide & Core Capstone Team Members to access the evaluation dashboard, database, and repository.
+            </p>
+        </div>
+
+        <!-- Form -->
+        <form action="{{ url_for('login') }}" method="POST" class="space-y-4">
+            <div>
+                <label for="username" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Username</label>
+                <input type="text" id="username" name="username" required placeholder="e.g. ramya.guide or sudhan"
+                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500 outline-none">
+            </div>
+
+            <div>
+                <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Password</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••"
+                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500 outline-none">
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold py-3 rounded-xl shadow-md text-sm transition-all">
+                Sign In to Review Console
+            </button>
+        </form>
+
+        <!-- Redirect for external students -->
+        <div class="text-center text-xs text-slate-500 pt-3 border-t border-slate-100">
+            Looking to submit a project proposal?
+            <a href="{{ url_for('submit_project') }}" class="font-bold text-sky-600 hover:underline block mt-1">
+                <i class="fa-solid fa-cloud-arrow-up mr-1"></i>Open Proposal Submission Form
+            </a>
+        </div>
+
+        <!-- 1-Click Evaluation Logins -->
+        <div class="pt-4 border-t border-slate-100 space-y-2">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 text-center">
+                Review Evaluation 1-Click Sign-Ins
+            </div>
+
+            <div class="space-y-2">
+                <!-- Dr. S.P. Ramya -->
+                <button type="button" onclick="quickLogin('ramya.guide', 'password123')"
+                        class="w-full p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-left flex items-center justify-between transition-colors">
+                    <div>
+                        <div class="text-xs font-bold text-amber-900">Dr. S.P. Ramya (Project Guide)</div>
+                        <div class="text-[10px] text-amber-700 font-mono">Faculty Review & Team Merging Console</div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right text-xs text-amber-600"></i>
+                </button>
+
+                <!-- Sudhan Babu -->
+                <button type="button" onclick="quickLogin('sudhan', 'password123')"
+                        class="w-full p-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-left flex items-center justify-between transition-colors">
+                    <div>
+                        <div class="text-xs font-bold text-sky-900">Sudhan Babu (RA2411047050032)</div>
+                        <div class="text-[10px] text-sky-700 font-mono">Team Lead • Full Repository Access</div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right text-xs text-sky-600"></i>
+                </button>
+
+                <!-- Keerthi Vasaa & Dayanandan -->
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="quickLogin('keerthi', 'password123')"
+                            class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-colors">
+                        <div class="text-[11px] font-bold text-slate-800">Keerthi Vasaa</div>
+                        <div class="text-[9px] text-slate-500 font-mono">RA2411047050041</div>
+                    </button>
+
+                    <button type="button" onclick="quickLogin('dayanandan', 'password123')"
+                            class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-colors">
+                        <div class="text-[11px] font-bold text-slate-800">Dayanandan</div>
+                        <div class="text-[9px] text-slate-500 font-mono">RA2411047050029</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function quickLogin(username, password) {
+    document.getElementById('username').value = username;
+    document.getElementById('password').value = password;
+    document.querySelector('form').submit();
+}
+</script>
+{% endblock %}
